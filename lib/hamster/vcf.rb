@@ -37,8 +37,10 @@ class VCF
       fields = line.split("\t")
       scaffold = fields[0]
       unless scaffold == last_scaffold
-        unique_snps_per_scaffold[last_scaffold] = count.to_f/@scaffolds[last_scaffold].to_f
-        count = 0
+        unless count == 0
+          unique_snps_per_scaffold[last_scaffold] = count.to_f/@scaffolds[last_scaffold].to_f
+          count = 0
+        end
         last_scaffold = scaffold
       else
         duper = fields[duper_tissue_pos+8]

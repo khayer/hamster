@@ -29,6 +29,7 @@ class TestVCF < Test::Unit::TestCase
     assert_equal(k.scaffolds["gi|471435341|gb|APMT01237443.1|"],1028)
     ##contig=<ID=gi|471435121|gb|APMT01237663.1|,length=1626>
     assert_equal(k.scaffolds["gi|471435121|gb|APMT01237663.1|"],1626)
+    assert_equal(k.scaffolds["gi|471435867|gb|APMT01236917.1|"],1032)
     assert_equal(k.snp_start_pos,1230595)
   end
 
@@ -39,6 +40,21 @@ class TestVCF < Test::Unit::TestCase
     assert_equal(unique_snps_per_scaffold["gi|471435341|gb|APMT01237443.1|"],nil)
     ##contig=<ID=gi|471435121|gb|APMT01237663.1|,length=1626>
     assert_equal(unique_snps_per_scaffold["gi|472278466|gb|KB708127.1|"],1.8197676775797793e-05)
+    unique_snps_per_scaffold_sorted = unique_snps_per_scaffold.sort_by {|scaffold, value| value}
+    assert_equal(unique_snps_per_scaffold_sorted[0],["gi|472278462|gb|KB708131.1|", 1.128220181116298e-05])
+    assert_equal(unique_snps_per_scaffold_sorted[-1], ["gi|472278466|gb|KB708127.1|", 1.8197676775797793e-05])
+  end
+
+  def test_count_snps_for_each_scaffold()
+    k = VCF.new(@test_long)
+    k.start_pos_and_scaffolds
+    unique_snps_per_scaffold = k.count_snps_for_each_scaffold(2,5)
+    assert_equal(unique_snps_per_scaffold["gi|471435341|gb|APMT01237443.1|"],nil)
+    ##contig=<ID=gi|471435121|gb|APMT01237663.1|,length=1626>
+    assert_equal(unique_snps_per_scaffold["gi|472278466|gb|KB708127.1|"],1.8197676775797793e-05)
+    unique_snps_per_scaffold_sorted = unique_snps_per_scaffold.sort_by {|scaffold, value| value}
+    assert_equal(unique_snps_per_scaffold_sorted[0],["gi|472278210|gb|KB708383.1|", 9.749429902086476e-07])
+    assert_equal(unique_snps_per_scaffold_sorted[-1], ["gi|471435867|gb|APMT01236917.1|", 0.011627906976744186])
   end
 
   def teardown

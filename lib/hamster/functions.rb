@@ -7,4 +7,8 @@ module Functions
     (num_reads_alt/(num_reads_ref+num_reads_alt)) < 0.95
   end
 
+  def sort_hash_by_value(some_hash)
+
+  end
+
 end
