@@ -1,3 +1,4 @@
+require "test/unit"
 require "hamster"
 
 class TestHamster < Test::Unit::TestCase
