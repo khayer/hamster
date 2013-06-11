@@ -39,10 +39,10 @@ class TestVCF < Test::Unit::TestCase
     unique_snps_per_scaffold = k.count_snps_for_each_scaffold(2,5)
     assert_equal(unique_snps_per_scaffold["gi|471435341|gb|APMT01237443.1|"],nil)
     ##contig=<ID=gi|471435121|gb|APMT01237663.1|,length=1626>
-    assert_equal(unique_snps_per_scaffold["gi|472278466|gb|KB708127.1|"],1.8197676775797793e-05)
+    assert_equal(unique_snps_per_scaffold["gi|472278466|gb|KB708127.1|"],1.816007827006267e-05)
     unique_snps_per_scaffold_sorted = unique_snps_per_scaffold.sort_by {|scaffold, value| value}
-    assert_equal(unique_snps_per_scaffold_sorted[0],["gi|472278462|gb|KB708131.1|", 1.128220181116298e-05])
-    assert_equal(unique_snps_per_scaffold_sorted[-1], ["gi|472278466|gb|KB708127.1|", 1.8197676775797793e-05])
+    assert_equal(unique_snps_per_scaffold_sorted[0],["gi|472278462|gb|KB708131.1|", 1.124978169101596e-05])
+    assert_equal(unique_snps_per_scaffold_sorted[-1], ["gi|472278466|gb|KB708127.1|", 1.816007827006267e-05])
   end
 
   #def test_count_snps_for_each_scaffold()
@@ -65,7 +65,7 @@ class TestVCF < Test::Unit::TestCase
     ##contig=<ID=gi|471435121|gb|APMT01237663.1|,length=1626>
     assert_equal(unique_snps_per_scaffold[["gi|472278466|gb|KB708127.1|",0]],1.8e-05)
     unique_snps_per_scaffold_sorted = unique_snps_per_scaffold.sort_by {|scaffold, value| value}
-    assert_equal(unique_snps_per_scaffold_sorted[0],[["gi|472278462|gb|KB708131.1|", 13], 2.0e-06])
+    assert_equal(unique_snps_per_scaffold_sorted[0],[["gi|472278464|gb|KB708129.1|", 64], 2.0e-06])
     assert_equal(unique_snps_per_scaffold_sorted[-1], [["gi|472278466|gb|KB708127.1|", 3], 0.000142])
 
     # With offset
@@ -91,10 +91,10 @@ class TestVCF < Test::Unit::TestCase
   #end
 
   def test_visualize_high_scores()
-    k = VCF.new(@test_short)
+    k = VCF.new(@test_long)
     k.start_pos_and_scaffolds
     unique_snps_per_scaffold = k.count_snps_for_each_scaffold_100base_window(2,5)
-    k.visualize_high_scores(unique_snps_per_scaffold)
+    k.visualize_high_scores(unique_snps_per_scaffold,5,2,5)
 
   end
 

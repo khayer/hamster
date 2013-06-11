@@ -46,6 +46,10 @@ class VCF
         duper = fields[duper_tissue_pos+8]
         next if duper =~ /\.\/\./ || duper =~ /^0\/0/
         duper = duper.split(":")
+        read_depth = duper[1].split(",")
+        alt = read_depth[0].to_i
+        ref = read_depth[1].to_i
+        next if ref == 0
         wt = fields[wt_tissue_pos+8].split(":")
         next if duper[0] == wt[0]
         next if less_than_95(duper[1])
@@ -71,10 +75,10 @@ class VCF
       scaffold = fields[0]
       last_scaffold = scaffold unless last_scaffold
       position = fields[1].to_i
-      if @scaffolds[last_scaffold] > window_length.to_f
-        divider = window_length
+      if @scaffolds[last_scaffold] > window_length
+        divider = window_length.to_f
       else
-        divider = @scaffolds[last_scaffold].to_f
+        next #divider = @scaffolds[last_scaffold].to_f
       end
       while position > ((window_num + 1) * window_length + os)
         window_num += 1
@@ -99,6 +103,10 @@ class VCF
       duper = fields[duper_tissue_pos+8]
       next if duper =~ /\.\/\./ || duper =~ /^0\/0/
       duper = duper.split(":")
+      read_depth = duper[1].split(",")
+      alt = read_depth[0].to_i
+      ref = read_depth[1].to_i
+      next if ref == 0
       wt = fields[wt_tissue_pos+8].split(":")
       next if duper[0] == wt[0]
       next if less_than_95(duper[1])
@@ -108,14 +116,41 @@ class VCF
   end
 
 
-  def visualize_high_scores(unique_snps,first=5)
+  def visualize_high_scores(unique_snps,first=5,
+    duper_tissue_pos,wt_tissue_pos)
     unique_snps_sorted = unique_snps.sort_by {
       |scaffold, value| value}
+    visualized = []
     while first > 0
-      puts unique_snps_sorted[-first]
+      name = unique_snps_sorted[-first][0][0]
       first -= 1
+      puts visualized
+      visualized.include?(name) ? next : visualized << name
+      @filehandle.pos = @snp_start_pos
+      data_x = []
+      data_y = []
+      @filehandle.each do |line|
+        fields = line.split("\t")
+        next unless fields[0] == name
+        scaffold = fields[0]
+        position = fields[1].to_i
+        duper = fields[duper_tissue_pos+8]
+        next if duper =~ /\.\/\./ || duper =~ /^0\/0/
+        duper = duper.split(":")
+        wt = fields[wt_tissue_pos+8].split(":")
+        next if duper[0] == wt[0]
+        read_depth = duper[1].split(",")
+        alt = read_depth[0].to_i
+        ref = read_depth[1].to_i
+        next if ref == 0
+        next if less_than_95(duper[1])
+        data_x << position
+        data_y << proportion(duper[1])
+      end
+      puts data_x.length
+      puts data_y.length
+      plot_data(data_x,data_y,name,@scaffolds[name])
     end
-
   end
 
 end
