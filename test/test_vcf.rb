@@ -90,6 +90,14 @@ class TestVCF < Test::Unit::TestCase
   #  assert_equal(unique_snps_per_scaffold_sorted[-1], [["gi|471435867|gb|APMT01236917.1|", 0], 0.011627906976744186])
   #end
 
+  def test_visualize_high_scores()
+    k = VCF.new(@test_short)
+    k.start_pos_and_scaffolds
+    unique_snps_per_scaffold = k.count_snps_for_each_scaffold_100base_window(2,5)
+    k.visualize_high_scores(unique_snps_per_scaffold)
+
+  end
+
   def teardown
 
   end

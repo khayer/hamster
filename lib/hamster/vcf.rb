@@ -55,12 +55,13 @@ class VCF
     unique_snps_per_scaffold
   end
 
-  def count_snps_for_each_scaffold_100base_window(duper_tissue_pos,wt_tissue_pos,offset=false)
+  def count_snps_for_each_scaffold_100base_window(
+      duper_tissue_pos,wt_tissue_pos,offset=false,
+      window_length=500000)
     unique_snps_per_scaffold = Hash.new()
     last_scaffold = nil
     count = 0
     window_num = 0
-    window_length = 500000
     old_window_num = 0
     offset ? os = window_length/2 : os = 0
     @filehandle.pos = @snp_start_pos
@@ -105,4 +106,16 @@ class VCF
     end
     unique_snps_per_scaffold
   end
+
+
+  def visualize_high_scores(unique_snps,first=5)
+    unique_snps_sorted = unique_snps.sort_by {
+      |scaffold, value| value}
+    while first > 0
+      puts unique_snps_sorted[-first]
+      first -= 1
+    end
+
+  end
+
 end
