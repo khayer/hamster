@@ -55,13 +55,14 @@ class VCF
     unique_snps_per_scaffold
   end
 
-  def count_snps_for_each_scaffold_100base_window(duper_tissue_pos,wt_tissue_pos)
+  def count_snps_for_each_scaffold_100base_window(duper_tissue_pos,wt_tissue_pos,offset=false)
     unique_snps_per_scaffold = Hash.new()
     last_scaffold = nil
     count = 0
     window_num = 0
-    window_length = 1000000
+    window_length = 500000
     old_window_num = 0
+    offset ? os = window_length/2 : os = 0
     @filehandle.pos = @snp_start_pos
     @filehandle.each do |line|
       line.chomp!
@@ -74,7 +75,7 @@ class VCF
       else
         divider = @scaffolds[last_scaffold].to_f
       end
-      while position > (window_num + 1) * window_length
+      while position > ((window_num + 1) * window_length + os)
         window_num += 1
       end
       if scaffold != last_scaffold
