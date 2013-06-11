@@ -54,4 +54,54 @@ class VCF
     end
     unique_snps_per_scaffold
   end
+
+  def count_snps_for_each_scaffold_100base_window(duper_tissue_pos,wt_tissue_pos)
+    unique_snps_per_scaffold = Hash.new()
+    last_scaffold = nil
+    count = 0
+    window_num = 0
+    window_length = 1000000
+    old_window_num = 0
+    @filehandle.pos = @snp_start_pos
+    @filehandle.each do |line|
+      line.chomp!
+      fields = line.split("\t")
+      scaffold = fields[0]
+      last_scaffold = scaffold unless last_scaffold
+      position = fields[1].to_i
+      if @scaffolds[last_scaffold] > window_length.to_f
+        divider = window_length
+      else
+        divider = @scaffolds[last_scaffold].to_f
+      end
+      while position > (window_num + 1) * window_length
+        window_num += 1
+      end
+      if scaffold != last_scaffold
+        logger.info("Scaffold is #{scaffold} at the moment")
+        unless count == 0
+          unique_snps_per_scaffold[[last_scaffold,old_window_num]] = count.to_f / divider
+          count = 0
+        end
+        last_scaffold = scaffold
+        window_num = 0
+        old_window_num = window_num
+      end
+      if window_num != old_window_num
+        unless count == 0
+          unique_snps_per_scaffold[[last_scaffold,old_window_num]] = count.to_f / divider
+          count = 0
+        end
+        old_window_num = window_num
+      end
+      duper = fields[duper_tissue_pos+8]
+      next if duper =~ /\.\/\./ || duper =~ /^0\/0/
+      duper = duper.split(":")
+      wt = fields[wt_tissue_pos+8].split(":")
+      next if duper[0] == wt[0]
+      next if less_than_95(duper[1])
+      count += 1
+    end
+    unique_snps_per_scaffold
+  end
 end
