@@ -27,7 +27,7 @@ module Functions
         plot.xtics 'nomirror'
         plot.ytics 'nomirror'
         #plot.xrange "[0:10]"
-        plot.yrange "[0.6:1.1]"
+        #plot.yrange "[0.6:1.1]"
 
         plot.data = [
           Gnuplot::DataSet.new( [data_x, data_y] ) do |ds|
