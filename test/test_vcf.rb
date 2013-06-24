@@ -103,8 +103,8 @@ class TestVCF < Test::Unit::TestCase
     k.start_pos_and_scaffolds
     #k.count_snps_for_each_scaffold(1,4)
     #puts k.scaffolds
-    unique_snps_per_scaffold = k.count_snps_for_each_scaffold_sliding_window(1,4)
-    k.visualize_high_scores_snp(unique_snps_per_scaffold,1,4,10)
+    unique_snps_per_scaffold = k.count_snps_for_each_scaffold_sliding_window(3,6)
+    k.visualize_high_scores_snp(unique_snps_per_scaffold,3,6,10)
   end
 
   def teardown

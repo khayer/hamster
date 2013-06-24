@@ -53,7 +53,6 @@ class VCF
         wt = fields[wt_tissue_pos+8].split(":")
         next if duper[0] == wt[0]
         next if less_than_95(duper[1])
-
         count += 1
       end
     end
@@ -121,6 +120,7 @@ class VCF
       |scaffold, value| value}
     visualized = []
     while first > 0
+
       name = unique_snps_sorted[-first][0][0]
       first -= 1
       puts visualized
@@ -205,11 +205,13 @@ class VCF
       current_snps << position
     end
     logger.info(unique_snps_per_scaffold.length)
+    unique_snps_sorted = unique_snps_per_scaffold.sort_by { |scaffold, value| value}
+    unique_snps_sorted.each {|entry| puts entry.join(",")}
     unique_snps_per_scaffold
   end
 
 
-  def visualize_high_scores_snp(unique_snps,duper_tissue_pos,wt_tissue_pos,first=5,window_length_snps=50)
+  def visualize_high_scores_snp(unique_snps,duper_tissue_pos,wt_tissue_pos,first=5,window_length_snps=25)
 
     unique_snps_sorted = unique_snps.sort_by { |scaffold, value| value}
     current_snps = []
@@ -219,7 +221,7 @@ class VCF
     while first > 0
       name = unique_snps_sorted[-counter][0][0]
       counter += 1
-
+      puts unique_snps_sorted[-counter].join(",")
       next if visualized.include?(name)
       @filehandle.pos = @snp_start_pos
       data_x = []
@@ -253,15 +255,16 @@ class VCF
         wt = fields[wt_tissue_pos+8].split(":")
         next if duper[0] == wt[0]
         read_depth = duper[1].split(",")
-        alt = read_depth[0].to_i
-        ref = read_depth[1].to_i
-        next if ref == 0
+        ref = read_depth[0].to_i
+        alt = read_depth[1].to_i
+        next if alt == 0
         next if less_than_95(duper[1])
         current_snps << position
       end
+      puts data_x.length
       if data_x.length > 5
-        puts data_x.length
-        puts data_y.length
+        #puts data_x.length
+        #puts data_y.length
         visualized << name
         logger.info("Visualized: " + visualized.join(":"))
         first -= 1
