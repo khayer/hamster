@@ -221,7 +221,6 @@ class VCF
     while first > 0
       name = unique_snps_sorted[-counter][0][0]
       counter += 1
-      puts unique_snps_sorted[-counter].join(",")
       next if visualized.include?(name)
       @filehandle.pos = @snp_start_pos
       data_x = []
