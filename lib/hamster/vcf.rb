@@ -113,7 +113,6 @@ class VCF
     unique_snps_per_scaffold
   end
 
-
   def visualize_high_scores(unique_snps,first=5,
     duper_tissue_pos,wt_tissue_pos)
     unique_snps_sorted = unique_snps.sort_by {
@@ -152,10 +151,11 @@ class VCF
     end
   end
 
-  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=20)
+  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=10)
     unique_snps_per_scaffold = Hash.new()
     current_snps = []
     last_scaffold = nil
+    scaffold = nil
     @filehandle.pos = @snp_start_pos
     @filehandle.each do |line|
       fields = line.split("\t")
@@ -176,19 +176,6 @@ class VCF
           current_snps = []
         end
       end
-
-      #duper = fields[duper_tissue_pos+8]
-      #next if duper =~ /\.\/\./ || duper =~ /^0\/0/
-      #duper = duper.split(":")
-      #read_depth = duper[1].split(",")
-      #alt = read_depth[0].to_i
-      #ref = read_depth[1].to_i
-      #next if ref == 0
-      #wt = fields[wt_tissue_pos+8].split(":")
-      #next if duper[0] == wt[0]
-      #next if less_than_95(duper[1])
-      #count += 1
-
       position = fields[1].to_i
       duper = fields[duper_tissue_pos+8]
       next if duper =~ /\.\/\./ || duper =~ /^0\/0/
@@ -200,9 +187,22 @@ class VCF
       alt = read_depth[1].to_i
       next if alt == 0
       next if less_than_95(duper[1])
-      #puts line
-      #STDIN.gets
       current_snps << position
+    end
+    if (current_snps.length == window_length_snps || last_scaffold != scaffold)
+      if current_snps.length >= window_length_snps/2
+        last_position = current_snps[-1]
+        first_position = current_snps.delete_at(0)
+        unique_snps_per_scaffold[[last_scaffold,first_position,last_position]] = current_snps.length.to_f/
+          (last_position - first_position).to_f
+      else
+        current_snps = []
+        last_scaffold = scaffold
+      end
+      if last_scaffold != scaffold
+        last_scaffold = scaffold
+        current_snps = []
+      end
     end
     logger.info(unique_snps_per_scaffold.length)
     unique_snps_sorted = unique_snps_per_scaffold.sort_by { |scaffold, value| value}
@@ -211,12 +211,13 @@ class VCF
   end
 
 
-  def visualize_high_scores_snp(unique_snps,duper_tissue_pos,wt_tissue_pos,first=5,window_length_snps=20)
+  def visualize_high_scores_snp(unique_snps,duper_tissue_pos,wt_tissue_pos,first=5,window_length_snps=10)
 
     unique_snps_sorted = unique_snps.sort_by { |scaffold, value| value}
     current_snps = []
     last_scaffold = nil
     visualized = []
+    scaffold = nil
     counter = 1
     while first > 0
       name = unique_snps_sorted[-counter][0][0]
@@ -259,6 +260,23 @@ class VCF
         next if alt == 0
         next if less_than_95(duper[1])
         current_snps << position
+      end
+      if (current_snps.length == window_length_snps || last_scaffold != scaffold)
+        if current_snps.length >= window_length_snps/2
+          last_position = current_snps[-1]
+          first_position = current_snps.delete_at(0)
+          #unique_snps_per_scaffold[[last_scaffold,last_position]] = current_snps.length.to_f/
+           # (last_position - first_position).to_f
+          data_x << last_position
+          data_y << current_snps.length.to_f/(last_position - first_position).to_f
+        else
+          current_snps = []
+          last_scaffold = scaffold
+        end
+        if last_scaffold != scaffold
+          last_scaffold = scaffold
+          current_snps = []
+        end
       end
       #puts data_x.length
       if data_x.length > 5

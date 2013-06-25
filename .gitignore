@@ -14,6 +14,7 @@ tmp
 test/data/*.png
 *~
 */*~
+hamster*
 
 # YARD artifacts
 .yardoc

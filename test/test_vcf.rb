@@ -9,12 +9,12 @@ class TestVCF < Test::Unit::TestCase
     @test_idx = "test/data/hamster.vcf.idx"
   end
 
-  #def test_initialize
-  #  k = VCF.new(@test_short)
-  #  assert_kind_of( File, k.filehandle )
-  #  assert_equal(k.scaffolds,{})
-  #  assert_equal(k.snp_start_pos,nil)
-  #end
+  def test_initialize
+    k = VCF.new(@test_short)
+    assert_kind_of( File, k.filehandle )
+    assert_equal(k.scaffolds,{})
+    assert_equal(k.snp_start_pos,nil)
+  end
 #
   #def test_start_pos_and_scaffolds()
   #  k = VCF.new(@test_short)
@@ -104,7 +104,7 @@ class TestVCF < Test::Unit::TestCase
     #k.count_snps_for_each_scaffold(1,4)
     #puts k.scaffolds
     unique_snps_per_scaffold = k.count_snps_for_each_scaffold_sliding_window(3,6)
-    k.visualize_high_scores_snp(unique_snps_per_scaffold,3,6,20)
+    k.visualize_high_scores_snp(unique_snps_per_scaffold,3,6,1)
   end
 
   def teardown
