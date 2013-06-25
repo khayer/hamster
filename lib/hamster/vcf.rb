@@ -152,7 +152,7 @@ class VCF
     end
   end
 
-  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=50)
+  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=20)
     unique_snps_per_scaffold = Hash.new()
     current_snps = []
     last_scaffold = nil
@@ -165,7 +165,7 @@ class VCF
         if current_snps.length >= window_length_snps/2
           last_position = current_snps[-1]
           first_position = current_snps.delete_at(0)
-          unique_snps_per_scaffold[[last_scaffold,last_position]] = current_snps.length.to_f/
+          unique_snps_per_scaffold[[last_scaffold,first_position,last_position]] = current_snps.length.to_f/
             (last_position - first_position).to_f
         else
           current_snps = []
@@ -211,7 +211,7 @@ class VCF
   end
 
 
-  def visualize_high_scores_snp(unique_snps,duper_tissue_pos,wt_tissue_pos,first=5,window_length_snps=25)
+  def visualize_high_scores_snp(unique_snps,duper_tissue_pos,wt_tissue_pos,first=5,window_length_snps=20)
 
     unique_snps_sorted = unique_snps.sort_by { |scaffold, value| value}
     current_snps = []
@@ -260,7 +260,7 @@ class VCF
         next if less_than_95(duper[1])
         current_snps << position
       end
-      puts data_x.length
+      #puts data_x.length
       if data_x.length > 5
         #puts data_x.length
         #puts data_y.length
