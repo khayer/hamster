@@ -11,3 +11,4 @@ include Logging
 require 'hamster/functions'
 include Functions
 require 'hamster/vcf'
+require 'hamster/fasta'
