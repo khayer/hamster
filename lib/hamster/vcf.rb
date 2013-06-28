@@ -179,13 +179,30 @@ class VCF
       position = fields[1].to_i
       duper = fields[duper_tissue_pos+8]
       next if duper =~ /\.\/\./ || duper =~ /^0\/0/
+
+      # Compare to all WT
+
       duper = duper.split(":")
-      wt = fields[wt_tissue_pos+8].split(":")
-      next if duper[0] == wt[0]
+      unique = true
+      [4,5,6].each do |wt_tissue_pos|
+        wt = fields[wt_tissue_pos+8].split(":")
+        if duper[0] == wt[0]
+          unique = false
+          break
+        end
+        #unless wt[0] =~ /\.\/\./
+        #  read_depth = wt[1].split(",")
+        #  ref = read_depth[0].to_i
+        #  alt = read_depth[1].to_i
+        #  next if ref < 5
+        #end
+      end
+      next unless unique
       read_depth = duper[1].split(",")
       ref = read_depth[0].to_i
       alt = read_depth[1].to_i
-      next if alt == 0
+      next if alt < 5
+
       next if less_than_95(duper[1])
       current_snps << position
     end
@@ -206,7 +223,7 @@ class VCF
     end
     logger.info(unique_snps_per_scaffold.length)
     unique_snps_sorted = unique_snps_per_scaffold.sort_by { |scaffold, value| value}
-    unique_snps_sorted.each {|entry| puts entry.join(",")}
+    unique_snps_sorted.each {|entry| puts "#{entry[0][0]}:#{entry[0][1]}-#{entry[0][2]}\t#{entry[1]}"}
     unique_snps_per_scaffold
   end
 
@@ -252,12 +269,30 @@ class VCF
         duper = fields[duper_tissue_pos+8]
         next if duper =~ /\.\/\./ || duper =~ /^0\/0/
         duper = duper.split(":")
-        wt = fields[wt_tissue_pos+8].split(":")
-        next if duper[0] == wt[0]
+
+
         read_depth = duper[1].split(",")
+
+        # Compare to all WT
+        unique = true
+        [4,5,6].each do |wt_tissue_pos|
+          wt = fields[wt_tissue_pos+8].split(":")
+          if duper[0] == wt[0]
+            unique = false
+            break
+          end
+          #unless wt[0] =~ /\.\/\./
+          #  read_depth = wt[1].split(",")
+          #  ref = read_depth[0].to_i
+          #  alt = read_depth[1].to_i
+          #  next if ref < 5
+          #end
+        end
+        next unless unique
         ref = read_depth[0].to_i
         alt = read_depth[1].to_i
-        next if alt == 0
+        next if alt < 5
+
         next if less_than_95(duper[1])
         current_snps << position
       end
@@ -279,7 +314,7 @@ class VCF
         end
       end
       #puts data_x.length
-      if data_x.length > 5
+      if data_x.length >= 5
         #puts data_x.length
         #puts data_y.length
         visualized << name

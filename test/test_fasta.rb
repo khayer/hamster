@@ -17,8 +17,9 @@ class TestFasta < Test::Unit::TestCase
   def test_sequence
     k = Fasta.new("hamster_unplaced.scaf.fa")
     k.create_index("hamster_unplaced.scaf.fa.fai")
-    #k.sequence("gi|472271995|gb|KB714598.1|")
-    k.sequence("gi|471435121|gb|APMT01237663.1|")
+    k.sequence("gi|472271995|gb|KB714598.1|")
+    #seq = k.sequence("gi|472278355|gb|KB708238.1|")
+    #puts seq[6173276,6173387]
   end
 
 end
