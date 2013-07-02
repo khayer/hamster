@@ -151,7 +151,7 @@ class VCF
     end
   end
 
-  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=10)
+  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=6)
     unique_snps_per_scaffold = Hash.new()
     current_snps = []
     last_scaffold = nil
@@ -186,7 +186,7 @@ class VCF
       unique = true
       [4,5,6].each do |wt_tissue_pos|
         wt = fields[wt_tissue_pos+8].split(":")
-        if duper[0] == wt[0]
+        if duper[0] == wt[0] || wt =~ /^0\/1/
           unique = false
           break
         end
@@ -223,7 +223,8 @@ class VCF
     end
     logger.info(unique_snps_per_scaffold.length)
     unique_snps_sorted = unique_snps_per_scaffold.sort_by { |scaffold, value| value}
-    unique_snps_sorted.each {|entry| puts "#{entry[0][0]}:#{entry[0][1]}-#{entry[0][2]}\t#{entry[1]}"}
+    #unique_snps_sorted.each {|entry| puts "#{entry[0][0]}:#{entry[0][1]}-#{entry[0][2]}\t#{entry[1]}"}
+    unique_snps_sorted.each {|entry| puts entry.join("\t")}
     unique_snps_per_scaffold
   end
 

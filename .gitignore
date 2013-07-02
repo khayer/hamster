@@ -20,3 +20,4 @@ hamster*
 .yardoc
 _yardoc
 doc/
+*.txt
