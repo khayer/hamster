@@ -151,7 +151,7 @@ class VCF
     end
   end
 
-  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=6)
+  def count_snps_for_each_scaffold_sliding_window(duper_tissue_pos,wt_tissue_pos,window_length_snps=10)
     unique_snps_per_scaffold = Hash.new()
     current_snps = []
     last_scaffold = nil
@@ -186,6 +186,7 @@ class VCF
       unique = true
       [4,5,6].each do |wt_tissue_pos|
         wt = fields[wt_tissue_pos+8].split(":")
+        next if wt =~ /\.\/\./
         if duper[0] == wt[0] || wt =~ /^0\/1/
           unique = false
           break
@@ -198,10 +199,28 @@ class VCF
         #end
       end
       next unless unique
+
+      in_all_samples = true
+      [1,2,3].each do |mut_tissue_pos|
+        mut = fields[mut_tissue_pos+8].split(":")
+        next if mut =~ /\.\/\./
+        unless duper[0] == mut[0]
+          unique = false
+          break
+        end
+        #unless wt[0] =~ /\.\/\./
+        #  read_depth = wt[1].split(",")
+        #  ref = read_depth[0].to_i
+        #  alt = read_depth[1].to_i
+        #  next if ref < 5
+        #end
+      end
+      next unless in_all_samples
+
       read_depth = duper[1].split(",")
       ref = read_depth[0].to_i
       alt = read_depth[1].to_i
-      next if alt < 5
+      next if alt < 8
 
       next if less_than_95(duper[1])
       current_snps << position
@@ -223,8 +242,8 @@ class VCF
     end
     logger.info(unique_snps_per_scaffold.length)
     unique_snps_sorted = unique_snps_per_scaffold.sort_by { |scaffold, value| value}
-    #unique_snps_sorted.each {|entry| puts "#{entry[0][0]}:#{entry[0][1]}-#{entry[0][2]}\t#{entry[1]}"}
-    unique_snps_sorted.each {|entry| puts entry.join("\t")}
+    unique_snps_sorted.each {|entry| puts "#{entry[0][0]}:#{entry[0][1]}-#{entry[0][2]}\t#{entry[1]}"}
+    #unique_snps_sorted.each {|entry| puts entry.join("\t")}
     unique_snps_per_scaffold
   end
 
@@ -292,7 +311,7 @@ class VCF
         next unless unique
         ref = read_depth[0].to_i
         alt = read_depth[1].to_i
-        next if alt < 5
+        next if alt < 8
 
         next if less_than_95(duper[1])
         current_snps << position
