@@ -203,9 +203,8 @@ class VCF
       in_all_samples = true
       [1,2,3].each do |mut_tissue_pos|
         mut = fields[mut_tissue_pos+8].split(":")
-        next if mut =~ /\.\/\./
-        unless duper[0] == mut[0]
-          unique = false
+        if !(duper[0] == mut[0]) or mut =~ /\.\/\./
+          in_all_samples = false
           break
         end
         #unless wt[0] =~ /\.\/\./

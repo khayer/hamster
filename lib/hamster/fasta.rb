@@ -40,4 +40,41 @@ class Fasta
     sequence
   end
 
+  def part_sequences(list_of_positions)
+    positions = []
+    scaf = {}
+    list_of_positions.each do |pos|
+      current_scaf = pos.split(":")[0]
+      start = pos.split(":")[1].split("-")[0].to_i - 10**4
+      stop = pos.split(":")[1].split("-")[1].to_i + 10**4
+      act_start = pos.split(":")[1].split("-")[0].to_i
+      act_stop = pos.split(":")[1].split("-")[1].to_i
+      start = 0 if start < 0
+      if scaf.has_value?(current_scaf)
+        temp = false
+        scaf.each_pair do |key,value|
+          if value == current_scaf
+            saved_start = key[0]
+            saved_stop = key[1]
+            if (saved_start-10**4 < act_start && saved_stop+10**4 > act_stop)
+              temp = true
+              puts "more fdgfd gfadgfadg yess"
+              break
+            end
+          end
+        end
+        unless temp == true
+          positions << "#{current_scaf}:#{start}-#{stop}"
+          scaf[[start,stop]] = current_scaf
+          puts "more yesy"
+        end
+      else
+        scaf[[start,stop]] = current_scaf
+        positions << "#{current_scaf}:#{start}-#{stop}"
+      end
+    end
+    `samtools faidx hamster_unplaced.scaf.fa "#{positions.join("\" \"")}" > sequences.fa`
+    positions
+  end
+
 end

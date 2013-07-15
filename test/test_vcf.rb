@@ -103,6 +103,17 @@ class TestVCF < Test::Unit::TestCase
     #k.count_snps_for_each_scaffold(1,4)
     #puts k.scaffolds
     unique_snps_per_scaffold = k.count_snps_for_each_scaffold_sliding_window(2,5)
+    puts "sjkhdkjsbfdvjhdfbglbt bjdbf jhgkdhkfdhgd hgjdfkhgdhgkjdhgldfgdfhgjd dfghdfj hgdfkj"
+    unique_snps_sorted = unique_snps_per_scaffold.sort_by { |scaffold, value| value}.reverse
+    dummy = []
+    unique_snps_sorted.each do |entry|
+      dummy << "#{entry[0][0]}:#{entry[0][1]}-#{entry[0][2]}"
+    end
+    puts dummy[0]
+    k = Fasta.new("hamster_unplaced.scaf.fa")
+    k.create_index("hamster_unplaced.scaf.fa.fai")
+    positions = k.part_sequences(dummy[0..100])
+    positions.each {|entry| puts "#{entry.split(":")[0]}:#{entry.split(":")[1].split("-")[0]}-#{entry.split(":")[1].split("-")[1]}"}
     #k.visualize_high_scores_snp(unique_snps_per_scaffold,1,4,5)
   end
 
