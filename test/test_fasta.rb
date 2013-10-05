@@ -22,4 +22,10 @@ class TestFasta < Test::Unit::TestCase
     #puts seq[6173276,6173387]
   end
 
+  #def test_part_sequences
+  #  k = Fasta.new("hamster_unplaced.scaf.fa")
+  #  k.create_index("hamster_unplaced.scaf.fa.fai")
+  #  n = k.part_sequences(["gi|472278340|gb|KB708253.1|:4915575-4915778","gi|472278340|gb|KB708253.1|:4915126-4915777","gi|472278340|gb|KB708253.1|:1915126-2915777"])
+  #end
+
 end
